@@ -1,0 +1,44 @@
+#CUSTOM XPACK LOG4J FILE
+
+appender.audit_rolling.type = RollingFile
+appender.audit_rolling.name = audit_rolling
+{% if (es_version | version_compare('6.0.0', '<')) %}
+appender.audit_rolling.fileName = ${sys:es.logs}_access.log
+{% else %}
+appender.audit_rolling.fileName = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}_access.log
+{% endif %}
+appender.audit_rolling.layout.type = PatternLayout
+appender.audit_rolling.layout.pattern = [%d{ISO8601}] %m%n
+{% if (es_version | version_compare('6.0.0', '<')) %}
+appender.audit_rolling.filePattern = ${sys:es.logs}-%d{yyyy-MM-dd}_access.log
+{% else %}
+appender.audit_rolling.filePattern = ${sys:es.logs.base_path}${sys:file.separator}${sys:es.logs.cluster_name}_access-%d{yyyy-MM-dd}-%i.log.gz
+{% endif %}
+appender.audit_rolling.policies.type = Policies
+appender.audit_rolling.policies.time.type = TimeBasedTriggeringPolicy
+appender.audit_rolling.policies.time.interval = 1
+appender.audit_rolling.policies.time.modulate = true
+{% if (es_version | version_compare('6.0.0', '>')) %}
+appender.audit_rolling.policies.size.type = SizeBasedTriggeringPolicy
+appender.audit_rolling.policies.size.size = 128MB
+appender.audit_rolling.strategy.type = DefaultRolloverStrategy
+appender.audit_rolling.strategy.fileIndex = nomax
+appender.audit_rolling.strategy.action.type = Delete
+appender.audit_rolling.strategy.action.basepath = ${sys:es.logs.base_path}
+appender.audit_rolling.strategy.action.condition.type = IfFileName
+appender.audit_rolling.strategy.action.condition.glob = ${sys:es.logs.cluster_name}_access-*
+appender.audit_rolling.strategy.action.condition.nested_condition.type = IfLastModified
+appender.audit_rolling.strategy.action.condition.nested_condition.age = 14D
+{% endif %}
+
+logger.xpack_security_audit_logfile.name = org.elasticsearch.xpack.security.audit.logfile.LoggingAuditTrail
+logger.xpack_security_audit_logfile.level = info
+logger.xpack_security_audit_logfile.appenderRef.audit_rolling.ref = audit_rolling
+logger.xpack_security_audit_logfile.additivity = false
+
+logger.xmlsig.name = org.apache.xml.security.signature.XMLSignature
+logger.xmlsig.level = error
+logger.samlxml_decrypt.name = org.opensaml.xmlsec.encryption.support.Decrypter
+logger.samlxml_decrypt.level = fatal
+logger.saml2_decrypt.name = org.opensaml.saml.saml2.encryption.Decrypter
+logger.saml2_decrypt.level = fatal

@@ -6,6 +6,9 @@
 - name: include elasticsearch-xpack-install.yml
   include: elasticsearch-xpack-install.yml
 
+- name: include elasticsearch-xpack-config.yml
+  include: elasticsearch-xpack-config.yml
+
 #Security configuration
 - name: include security/elasticsearch-security.yml
   include: security/elasticsearch-security.yml

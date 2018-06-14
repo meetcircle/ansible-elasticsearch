@@ -36,8 +36,8 @@ appender.rolling.strategy.action.type = Delete
 appender.rolling.strategy.action.basepath = ${sys:es.logs.base_path}
 appender.rolling.strategy.action.condition.type = IfFileName
 appender.rolling.strategy.action.condition.glob = ${sys:es.logs.cluster_name}-*
-appender.rolling.strategy.action.condition.nested_condition.type = IfAccumulatedFileSize
-appender.rolling.strategy.action.condition.nested_condition.exceeds = 2GB
+appender.rolling.strategy.action.condition.nested_condition.type = IfLastModified
+appender.rolling.strategy.action.condition.nested_condition.age = 14D
 {% endif %}
 rootLogger.level = info
 rootLogger.appenderRef.console.ref = console

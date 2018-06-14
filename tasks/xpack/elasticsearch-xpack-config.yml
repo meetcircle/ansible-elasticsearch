@@ -1,0 +1,7 @@
+---
+#Copy the logging.yml
+- name: Copy x-pack log4j2.properties File for Instance
+  become: yes
+  template: src={{es_xpack_log4j2}} dest={{conf_dir}}/x-pack/log4j2.properties owner={{ es_user }} group={{ es_group }} mode=0644 force=yes
+  when: (x_pack_installed.rc == 0 or es_version_changed) and es_enable_xpack
+  notify: restart elasticsearch

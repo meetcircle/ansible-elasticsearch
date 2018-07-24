@@ -3,8 +3,12 @@ Description=Elasticsearch-{{es_instance_name}}
 Documentation=http://www.elastic.co
 Wants=network-online.target
 After=network-online.target
+StartLimitInterval=600
+StartLimitBurst=5
 
 [Service]
+Restart=on-failure
+RestartSec=30
 Environment=ES_HOME={{es_home}}
 Environment=CONF_DIR={{conf_dir}}
 Environment=ES_PATH_CONF={{conf_dir}}
